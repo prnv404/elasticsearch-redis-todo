@@ -20,15 +20,22 @@ router.get("/search", currentUser,requireAuth, validateRequest, async (req: Requ
         index: "task",
         query: {
             bool: {
+                must: [
+                    {
+                        match: {
+                            userId:req.currentUser?.id
+                        }
+                    }
+                ],
                 should: [
                     {
                         match: {
-                            title:keyword
+                            title: keyword,
                         }
                     },
                     {
                         match: {
-                            description:keyword
+                            description: keyword,
                         }
                     }
                 ]
