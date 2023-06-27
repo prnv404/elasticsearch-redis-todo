@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: todo.dev
+      http:
+        paths:
+         - path: /api/users/?(.*)
+           pathType: Prefix
+           backend:
+              service:
+                name: user-srv
+                port:
+                  number: 3000
+         - path: /api/task/?(.*)
+           pathType: Prefix
+           backend:
+              service:
+                name: task-srv
+                port:
+                  number: 3000                    
+  

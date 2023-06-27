@@ -1,0 +1,26 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./k8s/stateless*
+build:
+  local:
+    push: true
+  artifacts:
+    - image: prnv404/user
+      context: user
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+    - image:  prnv404/task
+      context: task
+      docker:
+       dockerfile: Dockerfile
+      sync:
+        manual:
+         - src: 'src/**/*.ts'
+           dest: .

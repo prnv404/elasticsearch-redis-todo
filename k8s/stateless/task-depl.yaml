@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task
+  template:
+    metadata:
+      labels:
+        app: task
+    spec:
+      containers:
+        - name: task
+          image: prnv404/task
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-srv
+spec:
+  selector:
+    app: task
+  ports:
+    - name: task
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
