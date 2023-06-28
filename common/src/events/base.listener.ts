@@ -18,9 +18,9 @@ export abstract class KafkaListener<T extends Event> {
     protected consumer!: Consumer;
     
 
-    constructor(broker: string) {
+    constructor(client:Kafka) {
       
-        this.kafka = new Kafka({ brokers:[broker] });
+        this.kafka = client
         
     }
     
