@@ -3,7 +3,8 @@ import { body } from "express-validator";
 import { currentUser, requireAuth, validateRequest } from "@prnv404/todo";
 import { Task } from "../models/task.model";
 import client from "../config/elasticsearch";
-
+import { TaskCreatedEventPublisher } from "../event/publisher/task.created.publisher"; 
+import { kafka_client } from "../kafka.wrapper";
 const router = express.Router();
 
 
@@ -30,19 +31,25 @@ router.post(
     await task.save()
     
 
-    await client.index({
+     await client.index({
       index: "task",
-      document: {
+       document: {
+        userId:req.currentUser?.id,
         title,
         description
       }
-    })
-
+     })
     
+    
+
+    await new TaskCreatedEventPublisher(kafka_client).publish({
+      taskId: task.id,
+      title: task.title,
+      userId:task.userId
+    })
  
     res.status(201).send(task);
     
-      
         
 });
 

@@ -2,6 +2,9 @@ import 'dotenv/config'
 import mongoose from "mongoose";
 
 import  app from "./app";
+import { TaskCreatedListner } from './event/listener/task.created.listener';
+import { kafka_client } from './kafka.wrapper';
+import { TaskDeletedListner } from './event/listener/task.deleted.listener';
 
 const start = async () => {
 
@@ -25,6 +28,10 @@ const start = async () => {
         await mongoose.connect('mongodb://mongo-srv:27017/user');
         
         console.log("Connected to MongoDb");
+
+        await new TaskCreatedListner(kafka_client).listen()
+
+        await new TaskDeletedListner(kafka_client).listen()
         
     } catch (err) {
         

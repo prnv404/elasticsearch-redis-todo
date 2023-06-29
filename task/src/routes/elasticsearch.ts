@@ -15,7 +15,7 @@ const router = express.Router();
 router.get("/search", currentUser,requireAuth, validateRequest, async (req: Request, res: Response) => {
 
     const keyword = req.query.keyword as string
-
+    
     const result = await client.search({
         index: "task",
         query: {
@@ -43,7 +43,7 @@ router.get("/search", currentUser,requireAuth, validateRequest, async (req: Requ
         }
     })
     
-    res.status(200).json(result.hits.hits)
+    res.status(200).json(result.hits)
 })
 
 

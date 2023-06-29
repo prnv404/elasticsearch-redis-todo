@@ -1,14 +1,9 @@
 import express, { Request, Response } from "express";
-import { BadRequestError, NotFoundError, currentUser, requireAuth, validateRequest } from "@prnv404/todo";
+import {  NotFoundError, currentUser, requireAuth, validateRequest } from "@prnv404/todo";
 import { Task } from "../models/task.model";
-import client from '../config/elasticsearch'
+import { redisClient } from "../server";
 
     
-interface ITask {
-    description: string,
-    title:string
-}
-
 
 const router = express.Router();
 
@@ -22,14 +17,38 @@ router.get("/all", currentUser,requireAuth, validateRequest, async (req: Request
 })
 
 router.get( "/:id", currentUser,requireAuth,validateRequest, async (req: Request, res: Response) => {
-     
-    const id = req.params.id
-
-    let task = await Task.findById(id)
-
-    if (!task) throw new NotFoundError()
     
-    res.status(200).send(task);
+    try {
+        
+        const id = req.params.id
+
+        const isInCache = await redisClient.get(id)
+
+
+        if (isInCache) return res.status(200).json(JSON.parse(isInCache));
+        
+
+        let task = await Task.findById(id)
+        
+
+        if (!task) throw new NotFoundError()
+        
+
+        await  redisClient.set(id, JSON.stringify(task), {
+            EX: 10,
+            NX: true
+        });
+    
+        res.status(200).send(task);
+        
+
+    } catch (error) {
+
+        console.log(error)
+
+    }
+
+    
       
 });
 
