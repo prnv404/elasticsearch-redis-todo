@@ -5,6 +5,7 @@ import  app from "./app";
 import { TaskCreatedListner } from './event/listener/task.created.listener';
 import { kafka_client } from './kafka.wrapper';
 import { TaskDeletedListner } from './event/listener/task.deleted.listener';
+import { SUBJECT } from '@prnv404/todo';
 
 const start = async () => {
 
@@ -28,6 +29,18 @@ const start = async () => {
         await mongoose.connect('mongodb://mongo-srv:27017/user');
         
         console.log("Connected to MongoDb");
+
+        const admin = kafka_client.admin()
+
+        await admin.connect();
+        await admin.createTopics({
+            
+            topics: [
+                {topic:SUBJECT.TASK_CREATED}
+
+                ,{topic:SUBJECT.TASK_DELETED}
+            ]
+        })
 
         await new TaskCreatedListner(kafka_client).listen()
 

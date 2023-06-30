@@ -24,6 +24,7 @@ router.get( "/:id", currentUser,requireAuth,validateRequest, async (req: Request
 
         const isInCache = await redisClient.get(id)
 
+        console.log(isInCache)
 
         if (isInCache) return res.status(200).json(JSON.parse(isInCache));
         

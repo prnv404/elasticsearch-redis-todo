@@ -19,31 +19,38 @@ router.get("/search", currentUser,requireAuth, validateRequest, async (req: Requ
     const result = await client.search({
         index: "task",
         query: {
+            
             bool: {
+
                 must: [
                     {
                         match: {
-                            userId:req.currentUser?.id
+                            userId: req.currentUser?.id
                         }
                     }
                 ],
+                
                 should: [
                     {
-                        match: {
+                        fuzzy: {      
                             title: keyword,
                         }
                     },
-                    {
-                        match: {
+                    {  
+                        fuzzy: {  
                             description: keyword,
                         }
                     }
                 ]
+                
             }
+            
+            
         }
+
     })
     
-    res.status(200).json(result.hits)
+    res.status(200).json(result.hits.hits)
 })
 
 

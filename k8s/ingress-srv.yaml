@@ -24,4 +24,3 @@ spec:
                 name: task-srv
                 port:
                   number: 3000                    
-  

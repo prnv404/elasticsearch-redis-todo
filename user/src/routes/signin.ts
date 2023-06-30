@@ -20,7 +20,7 @@ router.post(
 
     const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).select({tasks:0}).exec()
 
     if (!existingUser) {
       throw new BadRequestError("Invalid credentials");
@@ -44,9 +44,10 @@ router.post(
 
 
     // Store it on session object
-    req.session = {
+   ( req as any).session = {
       jwt: userJwt,
-    };
+   };
+
 
     res.status(200).send(existingUser);
 
