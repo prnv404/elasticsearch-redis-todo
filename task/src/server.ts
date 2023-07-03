@@ -2,16 +2,38 @@ import 'dotenv/config'
 import mongoose from "mongoose";
 import {createClient} from 'redis'
 import app from "./app";
+import { mqttClient, publishMassive, publishMqttMessage, subscribeMqttTopic } from './mqtt';
+import clc from 'cli-color';
 
 export const redisClient = createClient({
-    url:"redis://redis-service:6379",
+  url: "redis://redis-srv:6379"
 })
 
 
 const start = async () => {
 
     try {
-  
+        
+
+      mqttClient.on('connect', () => {
+        console.log('Connected to MQTT broker');
+      });    
+    
+    mqttClient.on('error', (error) => {
+        console.error('Error:', error);
+    });
+      
+    
+      mqttClient.on('message', (receivedTopic: string, message: Buffer) => {
+      
+      console.log(clc.blue(`Received message from topic '${receivedTopic}': ${message.toString()}`))
+      
+      });
+      
+      await subscribeMqttTopic('test-topic')
+
+      await publishMassive('test-topic',5000)      
+
         await mongoose.connect('mongodb://mongo-srv:27017/task');
         
         console.log("Connected to MongoDb");

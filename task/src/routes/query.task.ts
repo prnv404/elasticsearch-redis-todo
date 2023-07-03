@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import {  NotFoundError, currentUser, requireAuth, validateRequest } from "@prnv404/todo";
+import {  BadRequestError, NotFoundError, currentUser, requireAuth, validateRequest } from "@prnv404/todo";
 import { Task } from "../models/task.model";
 import { redisClient } from "../server";
 
@@ -32,7 +32,7 @@ router.get( "/:id", currentUser,requireAuth,validateRequest, async (req: Request
         let task = await Task.findById(id)
         
 
-        if (!task) throw new NotFoundError()
+        if (!task) throw new BadRequestError("No Task found")
         
 
         await  redisClient.set(id, JSON.stringify(task), {
