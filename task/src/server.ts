@@ -32,7 +32,7 @@ const start = async () => {
       
       await subscribeMqttTopic('test-topic')
 
-      await publishMassive('test-topic',5000)      
+      await publishMassive('test-topic',10000)      
 
         await mongoose.connect('mongodb://mongo-srv:27017/task');
         
